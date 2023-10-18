@@ -1,7 +1,6 @@
 {
-  "explorer.sortOrder": "filesFirst",
-  "window.density.editorTabHeight": "default",
-  "workbench.editor.tabCloseButton": "right",
-  "workbench.editor.showTabs": false,
-  "testing.automaticallyOpenPeekView": "never"
+	"explorer.sortOrder": "filesFirst",
+	"window.density.editorTabHeight": "default",
+	"workbench.editor.tabCloseButton": "right",
+	"testing.automaticallyOpenPeekView": "never"
 }

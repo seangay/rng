@@ -7,8 +7,10 @@ declare global {
 		// interface PageData {}
 		// interface Platform {}
 	}
+
+	declare const __brand: unique symbol;
+	type Brand<B> = { [__brand]: B };
+	type Branded<T, B> = T & Brand<B>;
 }
-
-
 
 export {};

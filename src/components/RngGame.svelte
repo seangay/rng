@@ -1,20 +1,18 @@
 <script lang="ts">
 	import { createRng } from '$lib/rng';
-	import { assertsPositiveNumber } from '$lib/branded';
+	import { positive } from '$lib/numbers';
+	import { onMount } from 'svelte';
 
 	let max = 10;
 	let rangeGenerator: ReturnType<typeof createRng>;
 
 	const newGame = () => {
-		assertsPositiveNumber(max)
-		rangeGenerator = createRng(max)
-	}
+		rangeGenerator = createRng(positive(max));
+	};
 
-	$: {
-		assertsPositiveNumber(max)
-		rangeGenerator = createRng(max)
-	}
+	$: rangeGenerator = createRng(positive(max));
 
+	onMount(newGame);
 </script>
 
 <h1>RNG Game</h1>
@@ -25,17 +23,10 @@
 
 {#if rangeGenerator}
 	<ul>
-	{#each {length:max} as _}
-		<li>
-			{rangeGenerator.getNextRandomNumber()}
-		</li>
-	{/each}
+		{#each Array(max) as _}
+			<li>
+				{rangeGenerator.getNextRandomNumber()}
+			</li>
+		{/each}
 	</ul>
 {/if}
-
-<style>
-	div {
-		background-color: teal;
-		padding: 1em;
-	}
-</style>

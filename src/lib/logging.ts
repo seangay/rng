@@ -1,2 +1,2 @@
-export const log = console.log
-export const logDebug = console.debug
+export const log = console.log;
+export const logDebug = console.debug;
