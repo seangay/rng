@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { createRng } from './rng';
+import { createRng, randomNumbers } from './rng';
 import { positive } from './numbers';
 
 describe('createRng test', () => {
@@ -12,5 +12,14 @@ describe('createRng test', () => {
 			rng.getNextRandomNumber();
 		}
 		expect(() => rng.getNextRandomNumber(), 'Number should throw').toThrow('We ran out of numbers');
+	});
+});
+
+describe('randomNumbers test', () => {
+	it('returns an array of unique numbers', () => {
+		const max = 10;
+		const numbers = randomNumbers(positive(max));
+		expect(numbers).toHaveLength(max);
+		expect(new Set(numbers)).toHaveLength(max);
 	});
 });
