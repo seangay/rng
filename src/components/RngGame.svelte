@@ -1,12 +1,23 @@
 <script lang="ts">
-	import { createRng } from '$lib/rng';
+	import { randomNumbers } from '$lib/rng';
 	import { positive } from '$lib/numbers';
+	import { fly } from 'svelte/transition';
 
 	let max = 10;
-	let rangeGenerator: ReturnType<typeof createRng>;
+
+	let numbers = randomNumbers(positive(max));
+
+	let error = '';
 
 	const newGame = () => {
-		rangeGenerator = createRng(positive(max));
+		error = '';
+		try {
+			numbers = randomNumbers(positive(max));
+		} catch (e) {
+			if (e instanceof Error) {
+				error = e.message;
+			}
+		}
 	};
 
 	$: max, newGame();
@@ -17,15 +28,15 @@
 
 	<label>Max <input class="input" type="number" bind:value={max} /></label>
 
-	<button class="btn variant-filled" on:click={newGame}>Generate New Set</button>
+	<button class="btn variant-filled" on:click={newGame}> Generate New Set </button>
 
-	{#if rangeGenerator}
+	{#if numbers}
 		<ul class="flex gap-2">
-			{#each Array(max) as _}
-				<li>
-					{rangeGenerator.getNextRandomNumber()}
-				</li>
+			{#each numbers as n}
+				<li>{n}</li>
 			{/each}
 		</ul>
 	{/if}
+
+	{#if error}<div transition:fly class="bg-error-400-500-token p-4 rounded">{error}</div>{/if}
 </div>
