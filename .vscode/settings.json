@@ -1,6 +1,5 @@
 {
 	"explorer.sortOrder": "filesFirst",
-	"window.density.editorTabHeight": "default",
-	"workbench.editor.tabCloseButton": "right",
+	"editor.acceptSuggestionOnCommitCharacter": false,
 	"testing.automaticallyOpenPeekView": "never"
 }
