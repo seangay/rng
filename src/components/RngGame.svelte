@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { createRng } from '$lib/rng';
 	import { positive } from '$lib/numbers';
-	import { onMount } from 'svelte';
 
 	let max = 10;
 	let rangeGenerator: ReturnType<typeof createRng>;
@@ -10,23 +9,23 @@
 		rangeGenerator = createRng(positive(max));
 	};
 
-	$: rangeGenerator = createRng(positive(max));
-
-	onMount(newGame);
+	$: max, newGame();
 </script>
 
-<h1>RNG Game</h1>
+<div class="flex flex-col items-center justify-center gap-4 min-h-full">
+	<h1 class="h1">RNG Game</h1>
 
-<input type="number" bind:value={max} />
+	<label>Max <input class="input" type="number" bind:value={max} /></label>
 
-<button on:click={newGame}>Generate New Set</button>
+	<button class="btn variant-filled" on:click={newGame}>Generate New Set</button>
 
-{#if rangeGenerator}
-	<ul>
-		{#each Array(max) as _}
-			<li>
-				{rangeGenerator.getNextRandomNumber()}
-			</li>
-		{/each}
-	</ul>
-{/if}
+	{#if rangeGenerator}
+		<ul class="flex gap-2">
+			{#each Array(max) as _}
+				<li>
+					{rangeGenerator.getNextRandomNumber()}
+				</li>
+			{/each}
+		</ul>
+	{/if}
+</div>
