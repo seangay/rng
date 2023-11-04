@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { positive, type PositiveNumber } from '$lib/numbers';
-
-	export let difficulty: PositiveNumber;
+	import { positive } from '$lib/numbers';
 
 	const [easy, medium, hard] = [10, 20, 30].map(positive);
+
+	export let difficulty = easy;
 </script>
 
 <h2 class="h2">Select Difficulty</h2>

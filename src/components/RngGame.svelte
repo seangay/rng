@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { randomNumbers } from '$lib/rng';
-	import { positive, type PositiveNumber } from '$lib/numbers';
+	import type { PositiveNumber } from '$lib/numbers';
 	import { onMount } from 'svelte';
 	import DifficultySelect from './DifficultySelect.svelte';
 	import MyNumber from './MyNumber.svelte';
@@ -19,25 +19,24 @@
 		guesses = [];
 	};
 
-	onMount(() => newGame(positive(10)));
+	onMount(() => newGame(difficulty));
 
 	const restart = () => newGame(difficulty);
 
 	const isSorted = (arr: number[]) => {
 		const filtered = arr.filter(Boolean);
-
 		for (let i = 0; i < filtered.length - 1; i++) {
 			if (filtered[i] > filtered[i + 1]) return false;
 		}
 		return true;
 	};
 
-	$: if (difficulty) newGame(difficulty);
-	$: if (numbers) number = numbers[guesses.length];
-	$: score = guesses?.length ?? 0;
+	$: newGame(difficulty);
+	$: number = numbers[guesses.length];
 	$: gameFailed = !isSorted(slots);
-	$: gameWon = !!(isSorted(slots) && !number && guesses);
+	$: gameWon = !!(isSorted(slots) && !number);
 	$: gameActive = !gameFailed && !gameWon;
+	$: score = guesses?.length ?? 0;
 	$: if (gameFailed) score = score - 1;
 </script>
 
