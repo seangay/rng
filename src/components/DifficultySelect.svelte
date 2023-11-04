@@ -1,9 +1,11 @@
 <script lang="ts">
-	import { positive } from '$lib/numbers';
+	import type { PositiveNumber } from '$lib/numbers';
+	import type { Writable } from 'svelte/store';
+	import { difficulties } from './game';
 
-	const [easy, medium, hard] = [10, 20, 30].map(positive);
+	export let difficulty: Writable<PositiveNumber>;
 
-	export let difficulty = easy;
+	const [easy, medium, hard] = difficulties;
 </script>
 
 <h2 class="h2">Select Difficulty</h2>
@@ -11,22 +13,21 @@
 	<button
 		type="button"
 		class="btn variant-filled bg-primary-50-900-token text-primary-600-300-token"
-		on:click={() => (difficulty = easy)}
+		on:click={() => ($difficulty = easy)}
 	>
-		Easy
-		{easy}
+		Easy {easy}
 	</button>
 	<button
 		type="button"
 		class="btn variant-filled bg-warning-50-900-token text-warning-600-300-token"
-		on:click={() => (difficulty = medium)}
+		on:click={() => ($difficulty = medium)}
 	>
 		Medium {medium}
 	</button>
 	<button
 		type="button"
 		class="btn variant-filled bg-error-50-900-token text-error-600-300-token"
-		on:click={() => (difficulty = hard)}
+		on:click={() => ($difficulty = hard)}
 	>
 		Hard {hard}
 	</button>
