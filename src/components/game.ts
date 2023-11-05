@@ -1,7 +1,8 @@
 import { positive, type PositiveNumber } from '$lib/numbers';
 import { randomNumbers } from '$lib/rng';
+import { localStorageStore } from '@skeletonlabs/skeleton';
 
-import { derived, get, readonly, writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 
 const isSorted = (arr: number[]) => {
 	const filtered = arr.filter(Boolean);
@@ -11,47 +12,83 @@ const isSorted = (arr: number[]) => {
 	return true;
 };
 
+type GameState = {
+	numbers: number[];
+	number: number;
+	guesses: number[];
+	slots: number[];
+	gameFailed: boolean;
+	gameWon: boolean;
+	gameOver: boolean;
+	score: number;
+	difficulty: PositiveNumber;
+};
+
+const defaultState = (difficulty: PositiveNumber): GameState => {
+	const numbers = randomNumbers(difficulty);
+
+	return {
+		numbers,
+		number: numbers[0],
+		guesses: [],
+		slots: new Array<number>(10).fill(0),
+		gameFailed: false,
+		gameWon: false,
+		gameOver: false,
+		score: 0,
+		difficulty,
+	};
+};
+
 export const difficulties = [10, 20, 30].map(positive);
 
 export const createGame = () => {
-	const numbers = writable<number[]>([]);
-	const guesses = writable<number[]>([]);
-	const slots = writable<number[]>(new Array(10).fill(0));
-
-	const difficulty = writable<PositiveNumber>(difficulties[0]);
-
-	const restart = () => {
-		numbers.set(randomNumbers(get(difficulty)));
-		slots.update((slots) => slots.fill(0));
-		guesses.set([]);
-	};
-
-	restart();
-
-	const number = derived([numbers, guesses], ([$numbers, $guesses]) => $numbers[$guesses.length]);
-	const gameFailed = derived(slots, ($slots) => !isSorted($slots));
-	const gameWon = derived([slots, number], ([$slots, $number]) => !isSorted($slots) && !$number);
-	const gameActive = derived(
-		[gameFailed, gameWon],
-		([$gameFailed, $gameWon]) => !$gameFailed && !$gameWon
-	);
-	const score = derived([guesses, gameFailed], ([$guesses, $gameFailed]) => {
-		let score = $guesses?.length ?? 0;
-		if ($gameFailed) score -= 1;
-		return score;
+	const highScores = localStorageStore<Record<PositiveNumber, number>>('highScores', {});
+	const gameState = writable<GameState>(defaultState(difficulties[0]));
+	const readonlyGameState = derived([gameState, highScores], ([$gameState, $highScores]) => {
+		return {
+			...$gameState,
+			highScores: $highScores,
+		};
 	});
 
 	return {
-		restart,
-		number: readonly(number),
-		guesses,
-		slots,
-		gameFailed,
-		gameWon,
-		gameActive,
-		score,
-		difficulty,
-		difficulties,
+		...readonlyGameState,
+		guessSlot: (slot: number, guess: number) => {
+			gameState.update((state) => {
+				if (state.slots[slot]) return state;
+
+				state.guesses.push(guess);
+				state.slots[slot] = guess;
+
+				if (isSorted(state.slots)) {
+					state.score = state.guesses.length;
+
+					if (state.guesses.length === state.numbers.length) {
+						state.gameWon = true;
+						state.gameOver = true;
+					}
+				} else {
+					state.gameFailed = true;
+					state.gameOver = true;
+					state.score = state.guesses.length - 1;
+				}
+
+				highScores.update((highScores) => {
+					if (!highScores[state.difficulty] || state.score > highScores[state.difficulty]) {
+						highScores[state.difficulty] = state.score;
+					}
+					return highScores;
+				});
+
+				state.number = state.numbers[state.guesses.length];
+
+				return state;
+			});
+		},
+		difficulty: (level: PositiveNumber) => gameState.set(defaultState(level)),
+		restart: () => gameState.update((state) => defaultState(state.difficulty)),
+		resetHighScores: () => highScores.set({}),
 	};
 };
 
