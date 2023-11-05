@@ -8,9 +8,3 @@ html,
 body {
 	@apply h-full;
 }
-
-@font-face {
-	font-family: 'Space Grotesk';
-	src: url('/fonts/SpaceGrotesk.ttf');
-	font-display: swap;
-}
