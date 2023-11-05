@@ -6,7 +6,6 @@
 	const [easy, medium, hard] = difficulties;
 
 	const handleDragStart = (e: DragEvent, guess: number) => {
-		if (!guess) return;
 		e.dataTransfer?.setData('guess', guess.toString());
 	};
 
